@@ -1,0 +1,22 @@
+import axios from "axios";
+
+//step 1:- create an axios instance and include all the common, static headers.
+const axiosInstance = axios.create({
+    baseURL: 'https://preprodapisix.omnenest.com',
+    timeout: 1000,
+    headers: {
+        "Content-Type": "application/json",
+        "appName": "NVantage - Middleware Qa",
+        "buildNumber": "10005",
+        "packageName": "com.coditas.omnenest.omnenest_mobile_app.middlewareqa",
+        "appVersion": "1.0.6",
+        "os": "android",
+        "deviceId": "2abe6bee-768f-4714-ab8d-2da64540bda8",
+        "deviceIp": "10.0.2.16",
+        "source": "MOB",
+        "appInstallId": "2abe6bee-768f-4714-ab8d-2da64540bda8",
+        "userAgent": "com.coditas.omnenest.omnenest_mobile_app.middlewareqa/1.0.6 (Google google sdk_gphone64_x86_64; Android 15 SDK35)"
+    }
+})
+
+export default axiosInstance;
