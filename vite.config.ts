@@ -7,4 +7,18 @@ export default defineConfig({
   plugins: [react(),
     tailwindcss()
   ],
+  server: {
+    proxy: {
+      '/v1': {
+        target: 'https://preprodapisix.omnenest.com',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/v2': {
+        target: 'https://preprodapisix.omnenest.com',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })

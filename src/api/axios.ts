@@ -2,8 +2,8 @@ import axios from "axios";
 
 //step 1:- create an axios instance and include all the common, static headers.
 const axiosInstance = axios.create({
-    baseURL: 'https://preprodapisix.omnenest.com',
-    timeout: 1000,
+    baseURL: '',
+    timeout: 10000,
     headers: {
         "Content-Type": "application/json",
         "appName": "NVantage - Middleware Qa",
