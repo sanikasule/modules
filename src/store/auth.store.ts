@@ -4,13 +4,17 @@ import {
   validateOTP,
   forgotPassword,
   preAuthHandshake,
+  logout
 } from "../api/auth.api";
 
 interface AuthState {
-  formError: string;
-  setFormError: (msg: string) => void;
+  formMessage: string;
+  isSuccess: boolean;
+  isAuthenticated: boolean;
+  setFormMessage: (msg: string) => void;
 
   startHandshake: () => Promise<void>;
+
   loginUser: (data: {
     username: string;
     password: string;
@@ -21,16 +25,20 @@ interface AuthState {
     otp: number;
   }) => Promise<any>;
 
-  forgotPasswordUser: (
-    pan: string,
+  forgotPasswordUser: (data: {
+    panNumber: string,
     username: string
-  ) => Promise<void>;
+  }) => Promise<void>;
+
+  logout: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  formError: "",
+  formMessage: "",
+  isSuccess: false,
+  isAuthenticated: !!localStorage.getItem("access_token"),
 
-  setFormError: (msg) => set({ formError: msg }),
+  setFormMessage: (msg) => set({ formMessage: msg }),
 
   startHandshake: async () => {
     await preAuthHandshake();
@@ -39,9 +47,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   loginUser: async (data) => {
     try {
       await login(data);
-      set({ formError: "" });
+      set({ formMessage: "" });
     } catch {
-      set({ formError: "Invalid username or password" });
+      set({ isSuccess: false, formMessage: "Invalid username or password" });
       throw new Error();
     }
   },
@@ -49,15 +57,30 @@ export const useAuthStore = create<AuthState>((set) => ({
   verifyOtp: async (data) => {
     try {
       const res = await validateOTP(data);
-      set({ formError: "" });
+      set({ formMessage: "" });
+      localStorage.setItem(
+        "access_token",
+        res.jwtTokens.accessToken
+      );
+      localStorage.setItem("refresh_token",
+        res.jwtTokens.refreshToken
+      )
+      set({isAuthenticated: true, formMessage: ""});
       return res;
     } catch {
-      set({ formError: "Invalid OTP" });
+      set({ isSuccess: false, formMessage: "Invalid OTP" });
       throw new Error();
     }
   },
 
-  forgotPasswordUser: async (pan, username) => {
-    await forgotPassword(pan, username);
+  forgotPasswordUser: async (data) => {
+    await forgotPassword(data);
   },
+
+  logout: async () => {
+    await logout();
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    set({isAuthenticated: false})
+  }
 }));

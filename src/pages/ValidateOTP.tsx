@@ -5,16 +5,19 @@ import { validateOTPSchema } from "../schemas/auth.schema";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useRef } from "react";
 import AuthLeftPanel from "../shared/components/AuthLeftLayout";
-import ErrorAlert from "../shared/components/ErrorAlert";
+import AlertMessage from "../shared/components/AlertMessage";
 import { useAuthStore } from "../store/auth.store";
+import Button from "../shared/components/Button";
+import OTPField from "../shared/components/OTPField";
+
 
 export default function ValidateOTP() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const verifyOtp = useAuthStore((s) => s.verifyOtp);
-  const formError = useAuthStore((s) => s.formError);
-  const setFormError = useAuthStore((s) => s.setFormError);
+  const formMessage = useAuthStore((s) => s.formMessage);
+  const setFormMessage = useAuthStore((s) => s.setFormMessage);
 
   const username = location.state?.username;
 
@@ -33,10 +36,6 @@ export default function ValidateOTP() {
   const onSubmit = async (data: ValidateOtpData) => {
     try {
       const res = await verifyOtp(data);
-      localStorage.setItem(
-        "accessToken",
-        res.jwtTokens.accessToken
-      );
       navigate("/dashboard");
     } catch {}
   };
@@ -60,7 +59,7 @@ export default function ValidateOTP() {
       shouldValidate: true,
     });
 
-    setFormError("");
+    setFormMessage("");
   };
 
   return (
@@ -69,43 +68,35 @@ export default function ValidateOTP() {
 
       <div className="flex w-full flex-col items-center justify-center p-[24px] lg:w-1/2">
         <div className="w-full max-w-md">
+          <div className="mb-6 flex flex-col items-start">
+            <img
+              src="../src/assets/Vector.svg"
+              alt="Logo"
+              className="mb-2 w-10"
+            />
+            <h2 className="text-xl font-semibold text[#2A2A2B]">
+              Welcome to Nest app
+            </h2>
+
+            <h2 className="mt-12 text-[16px] font-semibold text[#2A2A2B]">
+              Enter OTP
+            </h2>
+            {username && 
+            <p className="mt-2 text-sm text-gray-500">OTP sent to <span className="font-semibold text-gray-700">{username}</span></p>}           
+          </div>
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-6"
           >
-            <div className="flex justify-between">
-              {[...Array(4)].map((_, index) => (
-                <input
-                  key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  maxLength={1}
-                  className="w-15 h-15 text-center text-xl font-bold border rounded-lg"
-                  onChange={(e) =>
-                    handleOtpChange(e, index)
-                  }
-                />
-              ))}
-            </div>
+            <OTPField 
+              inputRefs={inputRefs} 
+              onChange={handleOtpChange} 
+              error={errors.otp?.message}
+            />
 
-            {errors.otp?.message && (
-              <p className="text-red-500 text-sm text-center">
-                {errors.otp.message}
-              </p>
-            )}
+            {formMessage && <AlertMessage message={formMessage} />}
 
-            <ErrorAlert message={formError} />
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full rounded-lg p-4 font-semibold text-[16px] ${
-                isValid
-                  ? "bg-[#0F62FE] text-white"
-                  : "bg-[#EAECEF] text-[#9EA3AE]"
-              }`}
-            >
-              {isSubmitting ? "Verifying..." : "Verify"}
-            </button>
+            <Button type="submit" isValid={isValid} isSubmitting={isSubmitting} label1="Verifying..." label2="Verify" />
           </form>
         </div>
       </div>

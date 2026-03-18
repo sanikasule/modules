@@ -3,20 +3,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { LoginFormData } from "../schemas/auth.schema";
 import { loginSchema } from "../schemas/auth.schema";
 import { useNavigate } from "react-router-dom";
-import { EyeClosed, QrCode } from "lucide-react";
+import { QrCode } from "lucide-react";
 import { useAuthStore } from "../store/auth.store";
 import AuthLeftPanel from "../shared/components/AuthLeftLayout";
-import ErrorAlert from "../shared/components/ErrorAlert";
+import AlertMessage from "../shared/components/AlertMessage";
+import Button from "../shared/components/Button";
+import InputField from "../shared/components/InputField";
+import PasswordField from "../shared/components/PasswordField";
 
 const LoginPage = () => {
   const navigate = useNavigate();
 
   const loginUser = useAuthStore((s) => s.loginUser);
-  const forgotPasswordUser = useAuthStore(
-    (s) => s.forgotPasswordUser
-  );
-  const formError = useAuthStore((s) => s.formError);
-  const setFormError = useAuthStore((s) => s.setFormError);
+  // const forgotPasswordUser = useAuthStore(
+  //   (s) => s.forgotPasswordUser
+  // );
+  const formMessage = useAuthStore((s) => s.formMessage);
 
   const {
     register,
@@ -25,11 +27,12 @@ const LoginPage = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
-    criteriaMode: "all",
-    defaultValues: {
-      username: "",
-      password: "",
-    },
+    defaultValues: { username: "" as any, password: "" as any },
+    // criteriaMode: "all",
+    // defaultValues: {
+    //   username: '',
+    //   password: ''
+    // }
   });
 
   const onSubmit = async (data: LoginFormData) => {
@@ -42,7 +45,8 @@ const LoginPage = () => {
   };
 
   const handleForgotPassword = async () => {
-    await forgotPasswordUser("AMITH1234A", "AMITH1");
+    // await forgotPasswordUser("AMITH1234A", "AMITH1");
+    navigate("/forgot")
   };
 
   return (
@@ -66,45 +70,16 @@ const LoginPage = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-4"
           >
-            <div className="space-y-2">
-              <label className="text-[12px] font-medium text-[#555555]">
-                Mobile no. / Email /Client ID
-              </label>
-              <input
-                {...register("username")}
-                onChange={() => setFormError("")}
-                placeholder="Enter Mobile no. / Email"
-                className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
-              />
-            </div>
+            <InputField 
+              label="Mobile No. / Email / Client ID" registration={register("username")}
+              placeholder="Enter Mobile No. / Email / Client ID" 
+              error={errors.username?.message}
+            />
 
-            {errors.username?.message && (
-              <p className="text-red-500 text-sm text-center">
-                {errors.username.message}
-              </p>
-            )}
-
-            <div className="space-y-2">
-              <label className="text-[12px] font-medium text-[#555555]">
-                Password / MPIN
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  {...register("password")}
-                  onChange={() => setFormError("")}
-                  placeholder="Enter password / MPIN"
-                  className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
-                />
-                <EyeClosed className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer" />
-              </div>
-            </div>
-
-            {errors.password?.message && (
-              <p className="text-red-500 text-sm text-center">
-                {errors.password.message}
-              </p>
-            )}
+            <PasswordField label="Password" 
+            registration={register("password")}
+            placeholder="Enter Password"
+            error={errors.password?.message} />
 
             <div className="flex justify-center py-2">
               <button
@@ -115,31 +90,21 @@ const LoginPage = () => {
               </button>
             </div>
 
-            <ErrorAlert message={formError} />
+            {formMessage && <AlertMessage message={formMessage} />}
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full rounded-lg p-4 font-semibold text-[16px] transition-colors ${
-                isValid
-                  ? "bg-[#0F62FE] text-white shadow-lg cursor-pointer"
-                  : "bg-[#EAECEF] text-[#9EA3AE] cursor-not-allowed"
-              }`}
-            >
-              {isSubmitting ? "Logging in..." : "Login"}
-            </button>
+            <Button type="submit" isValid={isValid} isSubmitting={isSubmitting} label1="Logging in..." label2="Login" />
 
             <div className="flex justify-between pt-2 text-sm">
               <button
                 type="button"
                 onClick={handleForgotPassword}
-                className="font-semibold text-[12px] text-[#0F62FE]"
+                className="font-semibold text-[12px] text-[#0F62FE] cursor-pointer"
               >
                 Forgot user ID or password?
               </button>
               <button
                 type="button"
-                className="font-semibold text-[12px] text-[#0F62FE]"
+                className="font-semibold text-[12px] text-[#0F62FE] cursor-pointer"
               >
                 Guest login
               </button>
