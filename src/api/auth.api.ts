@@ -30,6 +30,18 @@ export const validateOTP = async (data: {
   return res.data;
 };
 
+export const forgotUserID = async (data:{
+  panNumber: string,
+  emailId: string
+}) => {
+  const res = await axiosInstance.post(
+    "/v1/api/auth/forgot-user-id", data
+  );
+
+  return res.data;
+};
+
+
 export const forgotPassword = async (data:{
   panNumber: string,
   username: string
@@ -42,5 +54,5 @@ export const forgotPassword = async (data:{
 };
 
 export const logout = async () => {
-  await axiosInstance.get("v1/api/auth/logout");
+  await axiosInstance.get("/v1/api/auth/logout");
 }

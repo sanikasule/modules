@@ -44,9 +44,9 @@ const LoginPage = () => {
     } catch {}
   };
 
-  const handleForgotPassword = async () => {
+  const handleForgot = async () => {
     // await forgotPasswordUser("AMITH1234A", "AMITH1");
-    navigate("/forgot")
+    navigate("/forgot/forgotpassword")
   };
 
   return (
@@ -97,7 +97,7 @@ const LoginPage = () => {
             <div className="flex justify-between pt-2 text-sm">
               <button
                 type="button"
-                onClick={handleForgotPassword}
+                onClick={handleForgot}
                 className="font-semibold text-[12px] text-[#0F62FE] cursor-pointer"
               >
                 Forgot user ID or password?

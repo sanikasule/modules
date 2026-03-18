@@ -3,6 +3,7 @@ import {
   login,
   validateOTP,
   forgotPassword,
+  forgotUserID,
   preAuthHandshake,
   logout
 } from "../api/auth.api";
@@ -24,6 +25,11 @@ interface AuthState {
     username: string;
     otp: number;
   }) => Promise<any>;
+
+  forgotUserID: (data: {
+    panNumber: string,
+    emailId: string
+  }) => Promise<void>;
 
   forgotPasswordUser: (data: {
     panNumber: string,
@@ -73,8 +79,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
+  forgotUserID: async (data) => {
+    try {
+      await forgotUserID(data);
+      set({ isSuccess: true, formMessage: "User ID has been sent to your registered mail" });
+    } catch {
+      set({ isSuccess: false, formMessage: "Invalid email or PAN number" });
+      throw new Error();
+    } 
+  },
+
   forgotPasswordUser: async (data) => {
-    await forgotPassword(data);
+    try {
+      await forgotPassword(data);
+      set({ isSuccess: true, formMessage: "New password has been successfully updated" });
+    } catch {
+      set({ isSuccess: false, formMessage: "Invalid user id or PAN number" });
+      throw new Error();
+    } 
   },
 
   logout: async () => {
