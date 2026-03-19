@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { ValidateOtpData } from "../schemas/auth.schema";
@@ -15,13 +16,43 @@ export default function ValidateOTP() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const username = location.state?.username;
+  const type = location.state?.type || "login";
+
   const verifyOtp = useAuthStore((s) => s.verifyOtp);
+  const authenticateOTP = useAuthStore((s) => s.authenticateOTP);
   const formMessage = useAuthStore((s) => s.formMessage);
   const setFormMessage = useAuthStore((s) => s.setFormMessage);
 
-  const username = location.state?.username;
-
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const [seconds, setSeconds] = useState(0);
+  const isTimerActive = seconds > 0;
+
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    if (seconds > 0) {
+    interval = setInterval(() => {
+      setSeconds((prev) => prev - 1);
+    }, 1000);
+  }
+    return () => clearInterval(interval);
+  }, [seconds]);
+
+  const handleResend = async () => {
+    if (isTimerActive) return;
+    try {
+      // Add your resend API call here if available in your store
+      // await resendOtp({ username });
+      
+      setSeconds(30); // Start 30-second countdown
+      setFormMessage(""); 
+      console.log("OTP Resent");
+    } catch (error) {
+      console.error("Failed to resend OTP", error);
+    }
+  };
 
   const {
     handleSubmit,
@@ -35,9 +66,22 @@ export default function ValidateOTP() {
 
   const onSubmit = async (data: ValidateOtpData) => {
     try {
-      const res = await verifyOtp(data);
-      navigate("/dashboard");
-    } catch {}
+      if (type === "unlock") {
+        // Case 2: Unblock logic
+        await authenticateOTP({
+          otp: data.otp,
+          username: data.username,
+          isUserBlocked: false, 
+        });
+        navigate("/login", { state: { unblocked: true } });
+      } else {
+        // Case 1: Standard Login logic
+        await verifyOtp(data);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("OTP Action failed", error);
+    }
   };
 
   const handleOtpChange = (
@@ -74,8 +118,8 @@ export default function ValidateOTP() {
               alt="Logo"
               className="mb-2 w-10"
             />
-            <h2 className="text-xl font-semibold text[#2A2A2B]">
-              Welcome to Nest app
+            <h2 className="text-xl font-semibold text-[#2A2A2B]">
+              {type === "unlock" ? "Unlock Your Account" : "Welcome to Nest app"}
             </h2>
 
             <h2 className="mt-12 text-[16px] font-semibold text[#2A2A2B]">
@@ -94,9 +138,25 @@ export default function ValidateOTP() {
               error={errors.otp?.message}
             />
 
+            <div className="mt-4 text-sm">
+              {isTimerActive ? (
+                <p className="text-gray-400">
+                  OTP would be resent in <span className="font-medium">{seconds}s</span>
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  className="text-[#0F62FE] font-medium hover:underline transition-colors"
+                >
+                  Resend OTP
+                </button>
+              )}
+            </div>
+
             {formMessage && <AlertMessage message={formMessage} />}
 
-            <Button type="submit" isValid={isValid} isSubmitting={isSubmitting} label1="Verifying..." label2="Verify" />
+            <Button type="submit" isValid={isValid} isSubmitting={isSubmitting} label1="Verifying..." label2={type === "unlock" ? "Unlock Account" : "Verify"} />
           </form>
         </div>
       </div>

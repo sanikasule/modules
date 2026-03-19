@@ -21,8 +21,8 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const changePasswordSchema = z.object({
-    oldPassword: z.string().min(1, {message: "PAN number required"}),
-    newPassword: z.string().min(1, {message: "PAN number required"})
+    oldPassword: z.string().min(1, {message: "Password required"}),
+    newPassword: z.string().min(1, {message: "Password required"})
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -30,3 +30,6 @@ export type ValidateOtpData = z.infer<typeof validateOTPSchema>;
 export type ForgotUserIDData = z.infer<typeof forgotUserIDSchema>
 export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 export type ChangePasswordData = z.infer<typeof changePasswordSchema>
+export type UnblockUserData = ValidateOtpData & {
+  isUserBlocked: boolean;
+};

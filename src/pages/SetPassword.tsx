@@ -5,15 +5,15 @@ import { changePasswordSchema } from "../schemas/auth.schema";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/auth.store";
 import AuthLeftPanel from "../shared/components/AuthLeftLayout";
-import ErrorAlert from "../shared/components/AlertMessage";
-import { EyeClosed } from "lucide-react";
+import AlertMessage from "../shared/components/AlertMessage";
+import PasswordField from "../shared/components/PasswordField";
 
-const ChangePasswordPage = () => {
+const SetPasswordPage = () => {
   const navigate = useNavigate();
 
   const loginUser = useAuthStore((s) => s.loginUser);
-  const formError = useAuthStore((s) => s.formError);
-  const setFormError = useAuthStore((s) => s.setFormError);
+  const formMessage = useAuthStore((s) => s.formMessage);
+  const setFormMessage = useAuthStore((s) => s.setFormMessage);
 
   const {
     register,
@@ -66,7 +66,7 @@ const ChangePasswordPage = () => {
                   type="password"
                   {...register("oldPassword")}
                   onChange={() => {
-                    setFormError("");
+                    setFormMessage("");
                   }}
                   placeholder="Enter password / MPIN"
                   className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
@@ -90,7 +90,7 @@ const ChangePasswordPage = () => {
                   type="password"
                   {...register("newPassword")}
                   onChange={() => {
-                    setFormError("");
+                    setFormMessage("");
                   }}
                   placeholder="Enter password / MPIN"
                   className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
@@ -105,7 +105,7 @@ const ChangePasswordPage = () => {
               </p>
             )}
 
-            {formError && <ErrorAlert message={formError} />}
+            {formMessage && <AlertMessage message={formMessage} />}
 
             <button
               type="submit"
@@ -125,4 +125,4 @@ const ChangePasswordPage = () => {
   );
 };
 
-export default ChangePasswordPage;
+export default SetPasswordPage;

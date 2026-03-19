@@ -30,6 +30,18 @@ export const validateOTP = async (data: {
   return res.data;
 };
 
+export const authenticateOTP = async (data: {
+  username: string;
+  otp: number;
+  isUserBlocked: boolean;
+}) => {
+  const res = await axiosInstance.post(
+    "/v1/api/auth/authenticate-otp",
+    data
+  );
+  return res.data;
+};
+
 export const forgotUserID = async (data:{
   panNumber: string,
   emailId: string

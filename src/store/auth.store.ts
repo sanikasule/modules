@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   login,
   validateOTP,
+  authenticateOTP,
   forgotPassword,
   forgotUserID,
   preAuthHandshake,
@@ -24,6 +25,12 @@ interface AuthState {
   verifyOtp: (data: {
     username: string;
     otp: number;
+  }) => Promise<any>;
+
+  authenticateOTP: (data: {
+    username: string;
+    otp: number;
+    isUserBlocked: boolean;
   }) => Promise<any>;
 
   forgotUserID: (data: {
@@ -54,9 +61,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await login(data);
       set({ formMessage: "" });
-    } catch {
-      set({ isSuccess: false, formMessage: "Invalid username or password" });
-      throw new Error();
+    } catch (error: any) {
+      // set({ isSuccess: false, formMessage: "Invalid username or password" });
+      // throw new Error();
+      const msg = error?.response?.status === 423 
+      ? "Account locked due to multiple failed attempts." 
+      : "Invalid username or password";
+      
+    set({ isSuccess: false, formMessage: msg });
+    
+    throw error;
     }
   },
 
@@ -72,6 +86,17 @@ export const useAuthStore = create<AuthState>((set) => ({
         res.jwtTokens.refreshToken
       )
       set({isAuthenticated: true, formMessage: ""});
+      return res;
+    } catch {
+      set({ isSuccess: false, formMessage: "Invalid OTP" });
+      throw new Error();
+    }
+  },
+
+  authenticateOTP: async (data) => {
+    try {
+      const res = await authenticateOTP(data);      
+      set({isSuccess: true, formMessage: "User is unblocked"});
       return res;
     } catch {
       set({ isSuccess: false, formMessage: "Invalid OTP" });

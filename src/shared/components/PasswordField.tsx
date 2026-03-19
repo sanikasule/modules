@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import type { UseFormRegisterReturn } from "react-hook-form";
 import { useAuthStore } from "../../store/auth.store";
-import { EyeClosed } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface PasswordFieldProps {
     label: string;
@@ -16,6 +16,7 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
     placeholder,
     error
 }) => {
+    const [showPassword, setShowPassword] = useState(false);
     const setFormMessage = useAuthStore((s) => s.setFormMessage)
     return (
         <div className="space-y-2">
@@ -23,10 +24,20 @@ const PasswordField: React.FC<PasswordFieldProps> = ({
                 {label}
             </label>
             <div className="relative">
-                <input {...registration} onChange={() => setFormMessage("")} type="password" placeholder={placeholder}
+                <input {...registration} onChange={(e) => {
+                    registration.onChange(e)
+                    setFormMessage("")}
+                } type={showPassword ? "text" : "password"}
+                placeholder={placeholder}
                 className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
                 />
-                <EyeClosed className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer" />
+                <button
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
                 {error && (
                     <p className="text-red-500 text-sm text-center">
                         {error}

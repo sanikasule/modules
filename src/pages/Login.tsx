@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { LoginFormData } from "../schemas/auth.schema";
@@ -13,6 +14,8 @@ import PasswordField from "../shared/components/PasswordField";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const [isBlocked, setIsBlocked] = useState(false); // Track block status
+  const [currentUsername, setCurrentUsername] = useState("");
 
   const loginUser = useAuthStore((s) => s.loginUser);
   // const forgotPasswordUser = useAuthStore(
@@ -27,7 +30,7 @@ const LoginPage = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
-    defaultValues: { username: "" as any, password: "" as any },
+    defaultValues: { username: "", password: "" },
     // criteriaMode: "all",
     // defaultValues: {
     //   username: '',
@@ -37,11 +40,29 @@ const LoginPage = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
+      setIsBlocked(false);
       await loginUser(data);
+      // Case 1: Normal Login Success -> Go to regular OTP
       navigate("/otp", {
-        state: { username: data.username },
+        state: { username: data.username, type: "login" },
       });
-    } catch {}
+    } catch (error: any) {
+      // Case 2: User is blocked
+      if (error?.response?.status === 423) {
+        setIsBlocked(true);
+        setCurrentUsername(data.username);
+      }
+    }
+  };
+
+  const handleUnblockRedirect = () => {
+    // Case 2: User clicks Unblock -> Go to same OTP page but with 'unlock' type
+    navigate("/otp", {
+      state: { 
+        username: currentUsername, 
+        type: "unlock" 
+      },
+    });
   };
 
   const handleForgot = async () => {
@@ -92,7 +113,23 @@ const LoginPage = () => {
 
             {formMessage && <AlertMessage message={formMessage} />}
 
-            <Button type="submit" isValid={isValid} isSubmitting={isSubmitting} label1="Logging in..." label2="Login" />
+            {isBlocked ? (
+              <button
+                  type="button"
+                  onClick={handleUnblockRedirect}
+                  className="w-full py-3 bg-[#0F62FE] text-white font-semibold rounded-md transition-colors"
+                >
+                  Unblock User
+                </button>
+            ) : (
+              <Button 
+                type="submit" 
+                isValid={isValid} 
+                isSubmitting={isSubmitting} 
+                label1="Logging in..." 
+                label2="Login" 
+              />
+            )}
 
             <div className="flex justify-between pt-2 text-sm">
               <button

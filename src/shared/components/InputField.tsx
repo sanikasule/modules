@@ -21,7 +21,9 @@ const InputField: React.FC<InputFieldProps> = ({
             <label className="text-[12px] font-medium text-[#555555]">
                 {label}
             </label>
-            <input {...registration} onChange={() => setFormMessage("")} placeholder={placeholder}
+            <input {...registration} onChange={(e) => {
+                registration.onChange(e);
+                setFormMessage("")}} placeholder={placeholder}
             className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
             />
             {error && (

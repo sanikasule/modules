@@ -5,7 +5,7 @@ import ValidateOTP from "../pages/ValidateOTP";
 import ForgotPage from "../pages/ForgotPage";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage";
 import ForgotUserIDPage from "../pages/ForgotUserID";
-import ChangePasswordPage from "../pages/ChangePassword";
+import SetPasswordPage from "../pages/SetPassword";
 
 
 export default function PublicRoute() {
@@ -19,7 +19,7 @@ export default function PublicRoute() {
                 <Route path='forgotpassword'    element={<ForgotPasswordPage />} />
                 <Route path='forgotuserid'  element={<ForgotUserIDPage />} />
             </Route>
-            <Route path="/changepassword" element={<ChangePasswordPage />} />
+            <Route path="/setpassword" element={<SetPasswordPage />} />
         </Routes>
     )
 }
