@@ -71,7 +71,7 @@ export default function ValidateOTP() {
         await authenticateOTP({
           otp: data.otp,
           username: data.username,
-          isUserBlocked: false, 
+          isUserBlocked: true, 
         });
         navigate("/login", { state: { unblocked: true } });
       } else {

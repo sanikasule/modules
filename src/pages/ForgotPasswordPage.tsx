@@ -35,7 +35,7 @@ const ForgotPasswordPage = () => {
   const onSubmit = async (data: ForgotPasswordData) => {
     try {
       await forgotPasswordUser(data);
-      navigate("/login"); //actual direction to otp then change password
+      navigate("/setpassword"); //actual direction to otp then change password
     } catch {}
   };
 

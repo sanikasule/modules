@@ -1,12 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ChangePasswordData } from "../schemas/auth.schema";
-import { changePasswordSchema } from "../schemas/auth.schema";
+import type { SetPasswordData } from "../schemas/auth.schema";
+import { setPasswordSchema } from "../schemas/auth.schema";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/auth.store";
 import AuthLeftPanel from "../shared/components/AuthLeftLayout";
 import AlertMessage from "../shared/components/AlertMessage";
+import InputField from "../shared/components/InputField";
 import PasswordField from "../shared/components/PasswordField";
+import Button from "../shared/components/Button";
 
 const SetPasswordPage = () => {
   const navigate = useNavigate();
@@ -19,10 +21,10 @@ const SetPasswordPage = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isValid },
-  } = useForm<ChangePasswordData>({
-    resolver: zodResolver(changePasswordSchema),
+  } = useForm<SetPasswordData>({
+    resolver: zodResolver(setPasswordSchema),
     mode: "onChange",
-    defaultValues: { oldPassword: "", newPassword: "" },
+    defaultValues: { username: "", password: "", confirmPassword: "" },
     // criteriaMode: "all",
     // defaultValues: {
     //   username: '',
@@ -30,7 +32,7 @@ const SetPasswordPage = () => {
     // }
   });
 
-  const onSubmit = async (data: ChangePasswordData) => {
+  const onSubmit = async (data: SetPasswordData) => {
     try {
       navigate("/login");
     } catch {}
@@ -57,67 +59,25 @@ const SetPasswordPage = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-4"
           >
-            <div className="space-y-2">
-              <label className="text-[12px] font-medium text-[#555555]">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  {...register("oldPassword")}
-                  onChange={() => {
-                    setFormMessage("");
-                  }}
-                  placeholder="Enter password / MPIN"
-                  className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
-                />
-                <EyeClosed className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer" />
-              </div>
-            </div>
+            <InputField 
+              label="Mobile No. / Email / Client ID" registration={register("username")}
+              placeholder="Enter Mobile No. / Email / Client ID" 
+              error={errors.username?.message}
+            />
 
-            {errors.oldPassword?.message && (
-              <p className="text-red-500 text-sm text-center">
-                {errors.oldPassword.message}
-              </p>
-            )}
+            <PasswordField label="Password" 
+            registration={register("password")}
+            placeholder="Enter Password"
+            error={errors.password?.message} />
 
-            <div className="space-y-2">
-              <label className="text-[12px] font-medium text-[#555555]">
-                Re-enter Password
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  {...register("newPassword")}
-                  onChange={() => {
-                    setFormMessage("");
-                  }}
-                  placeholder="Enter password / MPIN"
-                  className="w-full rounded-lg border border-gray-200 mt-[4px] p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-[14px]"
-                />
-                <EyeClosed className="absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 cursor-pointer" />
-              </div>
-            </div>
-
-            {errors.newPassword?.message && (
-              <p className="text-red-500 text-sm text-center">
-                {errors.newPassword.message}
-              </p>
-            )}
+            <PasswordField label="Re-enter Password" 
+            registration={register("confirmPassword")}
+            placeholder="Enter Password"
+            error={errors.confirmPassword?.message} />
 
             {formMessage && <AlertMessage message={formMessage} />}
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full rounded-lg p-4 font-semibold text-[16px] transition-colors ${
-                isValid
-                  ? "bg-[#0F62FE] text-white shadow-lg cursor-pointer"
-                  : "bg-[#EAECEF] text-[#9EA3AE] cursor-not-allowed"
-              }`}
-            >
-              {isSubmitting ? "Setting password..." : "Set Password"}
-            </button>
+            <Button type="submit" isValid={isValid} isSubmitting={isSubmitting} label1="Setting Password..." label2="Set Password" />
           </form>
         </div>
       </div>

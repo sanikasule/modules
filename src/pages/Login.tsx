@@ -117,7 +117,7 @@ const LoginPage = () => {
               <button
                   type="button"
                   onClick={handleUnblockRedirect}
-                  className="w-full py-3 bg-[#0F62FE] text-white font-semibold rounded-md transition-colors"
+                  className="w-full py-3 bg-[#0F62FE] text-white font-semibold rounded-md transition-colors cursor-pointer"
                 >
                   Unblock User
                 </button>

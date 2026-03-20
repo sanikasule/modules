@@ -65,6 +65,17 @@ export const forgotPassword = async (data:{
   return res.data;
 };
 
+// export const setPassword = async (data:{
+//   username: string,
+//   password: string,
+// }) => {
+//   const res = await axiosInstance.post(
+//     "/v1/api/auth/set-password", data
+//   );
+
+//   return res.data;
+// }
+
 export const logout = async () => {
   await axiosInstance.get("/v1/api/auth/logout");
 }

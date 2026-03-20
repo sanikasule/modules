@@ -17,6 +17,7 @@ export default function PublicRoute() {
             <Route path="/forgot" element={<ForgotPage />}>
                 <Route index element={<Navigate to='forgotpassword' replace />} />
                 <Route path='forgotpassword'    element={<ForgotPasswordPage />} />
+                <Route path='setpassword'    element={<SetPasswordPage />} />
                 <Route path='forgotuserid'  element={<ForgotUserIDPage />} />
             </Route>
             <Route path="/setpassword" element={<SetPasswordPage />} />
