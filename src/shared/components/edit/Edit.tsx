@@ -16,8 +16,8 @@ const Edit: React.FC<EditProps> = ({ label, scripsNumber }) => {
                 <p className="text-sm font-normal text-[#555555] align-item-center">
                     {scripsNumber} scrips
                 </p>
-                <PencilLine className="w-5 h-5 text-[#555555]" />
-                <Trash className="w-5 h-5 text-[#555555]" />
+                <PencilLine className="w-4 h-4 text-[#555555]" />
+                <Trash className="w-4 h-4 text-[#555555] " />
             </div>
         </div>
     );
