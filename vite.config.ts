@@ -1,24 +1,27 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),
-    tailwindcss()
-  ],
+  plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '/v1': {
-        target: 'https://preprodapisix.omnenest.com',
+      "/v1": {
+        target: "https://preprodapisix.omnenest.com",
         changeOrigin: true,
         secure: false,
       },
-      '/v2': {
-        target: 'https://preprodapisix.omnenest.com',
+      "/v2": {
+        target: "https://preprodapisix.omnenest.com",
         changeOrigin: true,
         secure: false,
-      }
-    }
-  }
-})
+      },
+      "/v3": {
+        target: "https://preprodapisix.omnenest.com",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+});
